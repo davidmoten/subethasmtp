@@ -11,7 +11,6 @@ import java.net.SocketTimeoutException;
 import java.security.cert.Certificate;
 import java.util.Map;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -196,56 +195,70 @@ public final class Session implements Runnable, MessageContext {
             return;
         }
 
-        this.sendResponse(
-                "220 " + this.server.getHostName() + " ESMTP " + this.server.getSoftwareName());
+        try {
+            this.server.getSessionHandler().acquire(this);
+        } catch (DropConnectionException drop) {
+            log.debug("SMTP " + drop.getMessage());
 
-        while (!this.quitting) {
-            try {
-                String line = null;
+            this.sendResponse(drop.getErrorResponse());
+            return;
+        }
+
+        try {
+            this.sendResponse(
+                    "220 " + this.server.getHostName() + " ESMTP " + this.server.getSoftwareName());
+
+            while (!this.quitting) {
                 try {
-                    line = this.reader.readLine();
-                } catch (SocketException ex) {
-                    // Lots of clients just "hang up" rather than issuing QUIT,
-                    // which would
-                    // fill our logs with the warning in the outer catch.
-                    if (log.isDebugEnabled())
-                        log.debug("Error reading client command: " + ex.getMessage(), ex);
+                    String line = null;
+                    try {
+                        line = this.reader.readLine();
+                    } catch (SocketException ex) {
+                        // Lots of clients just "hang up" rather than issuing QUIT,
+                        // which would
+                        // fill our logs with the warning in the outer catch.
+                        if (log.isDebugEnabled()) {
+                            log.debug("Error reading client command: " + ex.getMessage(), ex);
+                        }
 
+                        return;
+                    }
+
+                    if (line == null) {
+                        log.debug("no more lines from client");
+                        return;
+                    }
+
+                    log.debug("Client: {}", line);
+
+                    this.server.getCommandHandler().handleCommand(this, line);
+                } catch (DropConnectionException ex) {
+                    this.sendResponse(ex.getErrorResponse());
+                    return;
+                } catch (SocketTimeoutException ex) {
+                    this.sendResponse("421 Timeout waiting for data from client.");
+                    return;
+                } catch (CRLFTerminatedReader.TerminationException te) {
+                    String msg = "501 Syntax error at character position " + te.position()
+                            + ". CR and LF must be CRLF paired.  See RFC 2821 #2.7.1.";
+
+                    log.debug(msg);
+                    this.sendResponse(msg);
+
+                    // if people are screwing with things, close connection
+                    return;
+                } catch (CRLFTerminatedReader.MaxLineLengthException mlle) {
+                    String msg = "501 " + mlle.getMessage();
+
+                    log.debug(msg);
+                    this.sendResponse(msg);
+
+                    // if people are screwing with things, close connection
                     return;
                 }
-
-                if (line == null) {
-                    log.debug("no more lines from client");
-                    return;
-                }
-
-                log.debug("Client: {}", line);
-
-                this.server.getCommandHandler().handleCommand(this, line);
-            } catch (DropConnectionException ex) {
-                this.sendResponse(ex.getErrorResponse());
-                return;
-            } catch (SocketTimeoutException ex) {
-                this.sendResponse("421 Timeout waiting for data from client.");
-                return;
-            } catch (CRLFTerminatedReader.TerminationException te) {
-                String msg = "501 Syntax error at character position " + te.position()
-                        + ". CR and LF must be CRLF paired.  See RFC 2821 #2.7.1.";
-
-                log.debug(msg);
-                this.sendResponse(msg);
-
-                // if people are screwing with things, close connection
-                return;
-            } catch (CRLFTerminatedReader.MaxLineLengthException mlle) {
-                String msg = "501 " + mlle.getMessage();
-
-                log.debug(msg);
-                this.sendResponse(msg);
-
-                // if people are screwing with things, close connection
-                return;
             }
+        } finally {
+            this.server.getSessionHandler().release(this);
         }
     }
 
@@ -405,13 +418,14 @@ public final class Session implements Runnable, MessageContext {
 
     /**
      * Starts a mail transaction by creating a new message handler.
-     * 
+     *
      * @throws IllegalStateException
      *             if a mail transaction is already in progress
      */
     public void startMailTransaction() throws IllegalStateException {
-        if (this.messageHandler != null)
+        if (this.messageHandler != null) {
             throw new IllegalStateException("Mail transaction is already in progress");
+        }
         this.messageHandler = this.server.getMessageHandlerFactory().create(this);
     }
 

@@ -321,7 +321,7 @@ public final class SMTPClient {
      * @return a nice pretty description of who we are connected to
      */
     public String getHostPort() {
-        return this.hostPortName.get();
+        return this.hostPortName.orElse(null);
     }
 
 }

@@ -123,6 +123,8 @@ public final class SMTPServer implements SSLSocketCreator {
 
     private final SessionIdFactory sessionIdFactory;
 
+    private final SessionHandler sessionHandler;
+
     // mutable state
 
     /** The thread listening on the server socket. */
@@ -208,6 +210,8 @@ public final class SMTPServer implements SSLSocketCreator {
         private int maxMessageSize = MAX_MESSAGE_SIZE_UNLIMITED;
 
         private SessionIdFactory sessionIdFactory = new TimeBasedSessionIdFactory();
+
+        private SessionHandler sessionHandler = DummySessionHandler.INSTANCE;
 
         private SSLSocketCreator startTlsSocketCreator = SSL_SOCKET_CREATOR_DEFAULT;
 
@@ -458,6 +462,14 @@ public final class SMTPServer implements SSLSocketCreator {
             return this;
         }
 
+        /**
+         * Sets the {@link SessionHandler} which will track allocated session and connections.
+         */
+        public Builder sessionHandler(SessionHandler sessionHandler) {
+            this.sessionHandler = sessionHandler;
+            return this;
+        }
+
         public Builder serverSocketFactory(ServerSocketCreator serverSocketCreator) {
             this.serverSocketCreator = serverSocketCreator;
             return this;
@@ -536,7 +548,8 @@ public final class SMTPServer implements SSLSocketCreator {
             return new SMTPServer(hostName, bindAddress, port, backlog, softwareName, messageHandlerFactory,
                     authenticationHandlerFactory, executorService, enableTLS, hideTLS, requireTLS, requireAuth,
                     disableReceivedHeaders, maxConnections, connectionTimeoutMs, maxRecipients, maxMessageSize,
-                    sessionIdFactory, startTlsSocketCreator, serverSocketCreator, serverThreadNameProvider);
+                    sessionIdFactory, sessionHandler, startTlsSocketCreator, serverSocketCreator,
+                    serverThreadNameProvider);
         }
 
     }
@@ -546,13 +559,15 @@ public final class SMTPServer implements SSLSocketCreator {
             Optional<AuthenticationHandlerFactory> authenticationHandlerFactory,
             Optional<ExecutorService> executorService, boolean enableTLS, boolean hideTLS, boolean requireTLS,
             boolean requireAuth, boolean disableReceivedHeaders, int maxConnections, int connectionTimeoutMs,
-            int maxRecipients, int maxMessageSize, SessionIdFactory sessionIdFactory, SSLSocketCreator startTlsSocketFactory,
-            ServerSocketCreator serverSocketCreator, Function<SMTPServer, String> serverThreadNameProvider) {
+            int maxRecipients, int maxMessageSize, SessionIdFactory sessionIdFactory, SessionHandler sessionHandler,
+            SSLSocketCreator startTlsSocketFactory, ServerSocketCreator serverSocketCreator,
+            Function<SMTPServer, String> serverThreadNameProvider) {
         Preconditions.checkNotNull(messageHandlerFactory);
         Preconditions.checkNotNull(bindAddress);
         Preconditions.checkNotNull(executorService);
         Preconditions.checkNotNull(authenticationHandlerFactory);
         Preconditions.checkNotNull(sessionIdFactory);
+        Preconditions.checkNotNull(sessionHandler);
         Preconditions.checkNotNull(hostName);
         Preconditions.checkNotNull(serverThreadNameProvider);
         Preconditions.checkArgument(!requireAuth || authenticationHandlerFactory.isPresent(),
@@ -574,6 +589,7 @@ public final class SMTPServer implements SSLSocketCreator {
         this.maxRecipients = maxRecipients;
         this.maxMessageSize = maxMessageSize;
         this.sessionIdFactory = sessionIdFactory;
+        this.sessionHandler = sessionHandler;
         this.commandHandler = new CommandHandler();
         this.serverSocketCreator = serverSocketCreator;
         this.startTlsSocketCreator = startTlsSocketFactory;
@@ -824,6 +840,10 @@ public final class SMTPServer implements SSLSocketCreator {
 
     public SessionIdFactory getSessionIdFactory() {
         return sessionIdFactory;
+    }
+
+    public SessionHandler getSessionHandler() {
+        return sessionHandler;
     }
 
     public static Builder port(int port) {
