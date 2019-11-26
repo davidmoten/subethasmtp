@@ -20,6 +20,7 @@ import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.internal.io.CRLFTerminatedReader;
 import org.subethamail.smtp.internal.server.ServerThread;
+import org.subethamail.smtp.server.SessionLifecycleListener.SessionStartResult;
 
 /**
  * The thread that handles a connection. This class passes most of it's
@@ -195,12 +196,10 @@ public final class Session implements Runnable, MessageContext {
             return;
         }
 
-        try {
-            this.server.getSessionHandler().acquire(this);
-        } catch (DropConnectionException drop) {
-            log.debug("SMTP " + drop.getMessage());
-
-            this.sendResponse(drop.getErrorResponse());
+        final SessionStartResult sresult = this.server.getSessionLifecycleListener().onSessionStart(this);
+        if (!sresult.isAccepted()) {
+            log.debug("SMTP " + sresult.getErrorMessage());
+            this.sendResponse(sresult.getErrorCode() + " " + sresult.getErrorMessage());
             return;
         }
 
@@ -258,7 +257,7 @@ public final class Session implements Runnable, MessageContext {
                 }
             }
         } finally {
-            this.server.getSessionHandler().release(this);
+            this.server.getSessionLifecycleListener().onSessionEnd(this);
         }
     }
 

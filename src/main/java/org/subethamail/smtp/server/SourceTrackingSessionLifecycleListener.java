@@ -3,34 +3,48 @@ package org.subethamail.smtp.server;
 import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import org.subethamail.smtp.DropConnectionException;
 
 /**
- * A {@link SessionHandler} to track and limit connection counts by remote addresses.
+ * A {@link SessionLifecycleListener} to track and limit connection counts by remote addresses.
  *
- * @author diego.salvi
+ * @author Diego Salvi
  */
-public class SourceTrackingSessionHandler implements SessionHandler {
+public class SourceTrackingSessionLifecycleListener implements SessionLifecycleListener {
 
-    /**
-     * Template exception thrown by this facility. Generated only once to avoid not useful stacktrace
-     * generations.
-     */
-    private static final DropConnectionException DROP =
-            new DropConnectionException(421, "Too many connections, try again later");
+    /** Session drop response */
+    private final SessionStartResult drop;
 
     private final int maxConnectionsPerSource;
     private final ConcurrentMap<SrcKey, Integer> counts;
 
-    public SourceTrackingSessionHandler(int maxConnectionsPerSource) {
+    /**
+     * Create a new {@link SourceTrackingSessionLifecycleListener} with default reject message:
+     * {@code "421 Too many connections, try again later"}.
+     *
+     * @param maxConnectionsPerSource maximum number of concurrent connection per remote source ip
+     */
+    public SourceTrackingSessionLifecycleListener(int maxConnectionsPerSource) {
+        this(maxConnectionsPerSource, 421, "Too many connections, try again later");
+    }
+
+    /**
+     * Create a new {@link SourceTrackingSessionLifecycleListener} with custom reject message
+     * @param maxConnectionsPerSource maximum number of concurrent connection per remote source ip
+     * @param code SMTP code
+     * @param message SMTP message
+     */
+    public SourceTrackingSessionLifecycleListener(int maxConnectionsPerSource, int code, String message) {
         super();
 
         this.maxConnectionsPerSource = maxConnectionsPerSource;
+        this.drop = SessionStartResult.failure(code, message);
+
+
         this.counts = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void acquire(Session session) throws DropConnectionException {
+    public SessionStartResult onSessionStart(Session session) {
         try {
             counts.compute(toKey(session), (k, v) -> {
                 if (v == null) {
@@ -45,12 +59,13 @@ public class SourceTrackingSessionHandler implements SessionHandler {
                 }
             });
         } catch (LimitReachedException limit) {
-            throw DROP;
+            return drop;
         }
+        return SessionStartResult.success();
     }
 
     @Override
-    public void release(Session session) {
+    public void onSessionEnd(Session session) {
         counts.compute(toKey(session), (k, v) -> {
             if (--v == 0) {
                 return null;
@@ -66,7 +81,7 @@ public class SourceTrackingSessionHandler implements SessionHandler {
     }
 
     /**
-     * A lightway exception to avoid to create non useful stacktraces, this exception is use only internally
+     * A lightweight exception to avoid to create non useful stacktraces, this exception is use only internally
      * and never leaked out this class.
      */
     @SuppressWarnings("serial")
@@ -74,6 +89,7 @@ public class SourceTrackingSessionHandler implements SessionHandler {
         public static final LimitReachedException INSTANCE = new LimitReachedException();
 
         public LimitReachedException() {
+            /* Disables stacktraces and suppressions */
             super("Limit reached", null, false, false);
         }
     }

@@ -123,7 +123,7 @@ public final class SMTPServer implements SSLSocketCreator {
 
     private final SessionIdFactory sessionIdFactory;
 
-    private final SessionHandler sessionHandler;
+    private final SessionLifecycleListener sessionLifecycleListener;
 
     // mutable state
 
@@ -211,7 +211,7 @@ public final class SMTPServer implements SSLSocketCreator {
 
         private SessionIdFactory sessionIdFactory = new TimeBasedSessionIdFactory();
 
-        private SessionHandler sessionHandler = DummySessionHandler.INSTANCE;
+        private SessionLifecycleListener sessionLifecycleListener = NOPSessionLifecycleListener.INSTANCE;
 
         private SSLSocketCreator startTlsSocketCreator = SSL_SOCKET_CREATOR_DEFAULT;
 
@@ -463,10 +463,10 @@ public final class SMTPServer implements SSLSocketCreator {
         }
 
         /**
-         * Sets the {@link SessionHandler} which will track allocated session and connections.
+         * Sets the {@link SessionLifecycleListener} which will track allocated session and connections.
          */
-        public Builder sessionHandler(SessionHandler sessionHandler) {
-            this.sessionHandler = sessionHandler;
+        public Builder sessionLifecycleListener(SessionLifecycleListener sessionLifecycleListener) {
+            this.sessionLifecycleListener = sessionLifecycleListener;
             return this;
         }
 
@@ -548,7 +548,7 @@ public final class SMTPServer implements SSLSocketCreator {
             return new SMTPServer(hostName, bindAddress, port, backlog, softwareName, messageHandlerFactory,
                     authenticationHandlerFactory, executorService, enableTLS, hideTLS, requireTLS, requireAuth,
                     disableReceivedHeaders, maxConnections, connectionTimeoutMs, maxRecipients, maxMessageSize,
-                    sessionIdFactory, sessionHandler, startTlsSocketCreator, serverSocketCreator,
+                    sessionIdFactory, sessionLifecycleListener, startTlsSocketCreator, serverSocketCreator,
                     serverThreadNameProvider);
         }
 
@@ -559,15 +559,15 @@ public final class SMTPServer implements SSLSocketCreator {
             Optional<AuthenticationHandlerFactory> authenticationHandlerFactory,
             Optional<ExecutorService> executorService, boolean enableTLS, boolean hideTLS, boolean requireTLS,
             boolean requireAuth, boolean disableReceivedHeaders, int maxConnections, int connectionTimeoutMs,
-            int maxRecipients, int maxMessageSize, SessionIdFactory sessionIdFactory, SessionHandler sessionHandler,
-            SSLSocketCreator startTlsSocketFactory, ServerSocketCreator serverSocketCreator,
-            Function<SMTPServer, String> serverThreadNameProvider) {
+            int maxRecipients, int maxMessageSize, SessionIdFactory sessionIdFactory,
+            SessionLifecycleListener sessionLifecycleListener, SSLSocketCreator startTlsSocketFactory,
+            ServerSocketCreator serverSocketCreator, Function<SMTPServer, String> serverThreadNameProvider) {
         Preconditions.checkNotNull(messageHandlerFactory);
         Preconditions.checkNotNull(bindAddress);
         Preconditions.checkNotNull(executorService);
         Preconditions.checkNotNull(authenticationHandlerFactory);
         Preconditions.checkNotNull(sessionIdFactory);
-        Preconditions.checkNotNull(sessionHandler);
+        Preconditions.checkNotNull(sessionLifecycleListener);
         Preconditions.checkNotNull(hostName);
         Preconditions.checkNotNull(serverThreadNameProvider);
         Preconditions.checkArgument(!requireAuth || authenticationHandlerFactory.isPresent(),
@@ -589,7 +589,7 @@ public final class SMTPServer implements SSLSocketCreator {
         this.maxRecipients = maxRecipients;
         this.maxMessageSize = maxMessageSize;
         this.sessionIdFactory = sessionIdFactory;
-        this.sessionHandler = sessionHandler;
+        this.sessionLifecycleListener = sessionLifecycleListener;
         this.commandHandler = new CommandHandler();
         this.serverSocketCreator = serverSocketCreator;
         this.startTlsSocketCreator = startTlsSocketFactory;
@@ -842,8 +842,8 @@ public final class SMTPServer implements SSLSocketCreator {
         return sessionIdFactory;
     }
 
-    public SessionHandler getSessionHandler() {
-        return sessionHandler;
+    public SessionLifecycleListener getSessionLifecycleListener() {
+        return sessionLifecycleListener;
     }
 
     public static Builder port(int port) {
