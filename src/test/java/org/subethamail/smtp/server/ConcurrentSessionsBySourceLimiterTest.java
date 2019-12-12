@@ -7,7 +7,7 @@ import org.subethamail.smtp.client.SMTPException;
 import org.subethamail.smtp.client.SmartClient;
 import org.subethamail.smtp.internal.util.TextUtils;
 
-public class SourceTrackingSessionHandlerTest {
+public class ConcurrentSessionsBySourceLimiterTest {
 
     private static SMTPServer create(int max) {
         SMTPServer server = SMTPServer.port(0).messageHandler(
