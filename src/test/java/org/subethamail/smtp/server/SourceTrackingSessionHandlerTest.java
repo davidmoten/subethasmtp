@@ -7,14 +7,14 @@ import org.subethamail.smtp.client.SMTPException;
 import org.subethamail.smtp.client.SmartClient;
 import org.subethamail.smtp.internal.util.TextUtils;
 
-public class SourceTrackingSessionLifecycleListenerTest {
+public class SourceTrackingSessionHandlerTest {
 
     private static SMTPServer create(int max) {
         SMTPServer server = SMTPServer.port(0).messageHandler(
                 (context, from, to,
                         data) -> System.out.println("message from " + from + " to " + to
                                 + ":\n" + new String(data, StandardCharsets.UTF_8)))
-                .sessionLifecycleListener(new SourceTrackingSessionLifecycleListener(max))
+                .sessionHandler(new SourceTrackingSessionHandler(max))
                 .build();
         server.start();
         return server;

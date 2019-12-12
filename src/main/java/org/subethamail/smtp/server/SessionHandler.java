@@ -3,11 +3,11 @@ package org.subethamail.smtp.server;
 import com.github.davidmoten.guavamini.Preconditions;
 
 /**
- * Listener on session lifecycle events.
+ * Handler of session lifecycle events.
  *
  * @author Diego Salvi
  */
-public interface SessionLifecycleListener {
+public interface SessionHandler {
 
     /**
      * This method is invoked on a session creation, before sending the SMTP greeting and can react rejecting
@@ -19,7 +19,7 @@ public interface SessionLifecycleListener {
      * @param session newly created session
      * @return starting session result event, can allow or reject the newly created session
      */
-    SessionStartResult onSessionStart(Session session) ;
+    SessionAcceptance accept(Session session) ;
 
     /**
      * This method is invoked on session close.
@@ -29,42 +29,42 @@ public interface SessionLifecycleListener {
     void onSessionEnd(Session session);
 
     /**
-     * Result object for {@link SessionLifecycleListener#onSessionStart(Session)}
+     * Result object for {@link SessionHandler#accept(Session)}
      *
      * @author Diego Salvi
      */
-    public static final class SessionStartResult {
+    public static final class SessionAcceptance {
 
         /** Singleton success result */
-        private static final SessionStartResult SUCCESS = new SessionStartResult(true, -1, null);
+        private static final SessionAcceptance SUCCESS = new SessionAcceptance(true, -1, null);
 
         /**
-         * Returns a success {@link SessionLifecycleListener#onSessionStart(Session)} result.
+         * Returns a success {@link SessionHandler#accept(Session)} result.
          *
          * @return session start success
          */
-        public static SessionStartResult success() {
+        public static SessionAcceptance success() {
             return SUCCESS;
         }
 
         /**
-         * Returns a failed {@link SessionLifecycleListener#onSessionStart(Session)} result.
+         * Returns a failed {@link SessionHandler#accept(Session)} result.
          *
          * @param code SMTP failure result code
          * @param message SMTP failure result message
          * @return session start failure
          */
-        public static SessionStartResult failure(int code, String message) {
+        public static SessionAcceptance failure(int code, String message) {
             /* Check that code is a failure response! */
             Preconditions.checkArgument(code > 199 && code < 600, "Invalid SMTP response code " + code);
-            return new SessionStartResult(false, code, message);
+            return new SessionAcceptance(false, code, message);
         }
 
         private final boolean accepted;
         private final int errorCode;
         private final String errorMessage;
 
-        private SessionStartResult(boolean accepted, int errorCode, String errorMessage) {
+        private SessionAcceptance(boolean accepted, int errorCode, String errorMessage) {
             super();
             this.accepted = accepted;
             this.errorCode = errorCode;
