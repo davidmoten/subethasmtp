@@ -14,7 +14,7 @@ public class SourceTrackingSessionHandlerTest {
                 (context, from, to,
                         data) -> System.out.println("message from " + from + " to " + to
                                 + ":\n" + new String(data, StandardCharsets.UTF_8)))
-                .sessionHandler(new SourceTrackingSessionHandler(max))
+                .sessionHandler(new ConcurrentSessionsBySourceLimiter(max))
                 .build();
         server.start();
         return server;

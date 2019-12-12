@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author Diego Salvi
  */
-public class SourceTrackingSessionHandler implements SessionHandler {
+public final class ConcurrentSessionsBySourceLimiter implements SessionHandler {
 
     /** Session drop response */
     private final SessionAcceptance drop;
@@ -18,22 +18,22 @@ public class SourceTrackingSessionHandler implements SessionHandler {
     private final ConcurrentMap<InetAddress, Integer> counts;
 
     /**
-     * Create a new {@link SourceTrackingSessionHandler} with default reject message:
+     * Create a new {@link ConcurrentSessionsBySourceLimiter} with default reject message:
      * {@code "421 Too many connections, try again later"}.
      *
      * @param maxConnectionsPerSource maximum number of concurrent connection per remote source ip
      */
-    public SourceTrackingSessionHandler(int maxConnectionsPerSource) {
+    public ConcurrentSessionsBySourceLimiter(int maxConnectionsPerSource) {
         this(maxConnectionsPerSource, 421, "Too many connections, try again later");
     }
 
     /**
-     * Create a new {@link SourceTrackingSessionHandler} with custom reject message
+     * Create a new {@link ConcurrentSessionsBySourceLimiter} with custom reject message
      * @param maxConnectionsPerSource maximum number of concurrent connection per remote source ip
      * @param code SMTP code
      * @param message SMTP message
      */
-    public SourceTrackingSessionHandler(int maxConnectionsPerSource, int code, String message) {
+    public ConcurrentSessionsBySourceLimiter(int maxConnectionsPerSource, int code, String message) {
         super();
 
         this.maxConnectionsPerSource = maxConnectionsPerSource;
