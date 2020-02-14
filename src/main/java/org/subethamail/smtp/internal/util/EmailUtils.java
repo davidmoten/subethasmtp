@@ -39,7 +39,7 @@ public final class EmailUtils {
     public static String extractEmailAddress(String args, int offset) {
         String address = args.substring(offset).trim();
         if (address.indexOf('<') == 0) {
-            address = address.substring(1, address.indexOf('>'));
+            address = address.substring(1, address.lastIndexOf('>'));
             // spaces within the <> are also possible, Postfix apparently
             // trims these away:
             return address.trim();
