@@ -133,7 +133,8 @@ Dave Moten came across the Engine821 fork and
 * added `EmailUtils` tests
 * moved classes that are not part of the public API to internal packages
 * added pure SSL support to `SMTPServer` builder and a roundtrip unit test
-* added BDAT support
+* added `BDAT` support
+* added support for receiving inbound SMTP connections via a proxy that uses the `PROXY protocol`, built on the HAProxy specification found at https://www.haproxy.org/download/2.3/doc/proxy-protocol.txt
 
 
 ## Project Authors ##
