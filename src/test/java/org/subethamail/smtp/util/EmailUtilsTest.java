@@ -56,9 +56,45 @@ public class EmailUtilsTest {
             extractAndValidate("FROM:<Foo Bar <foobar@example.com>>", 5));
     }
 
+    @Test
+    public void testExtractWithAuthVerb() {
+        assertEquals("test@example.com",
+            extractAndValidate("FROM:<test@example.com> AUTH=<>", 5));
+    }
+
+    @Test
+    public void testExtractWithAuthVerbAndSpaces() {
+        assertEquals("test@example.com",
+            extractAndValidate("FROM:< test@example.com > AUTH=<>", 5));
+    }
+
+    @Test
+    public void testExtractWithAuthVerbAndNoLessThanSymbolAtStartOfEmail() {
+        assertEquals("test@example.com",
+            extractAndValidate("FROM:test@example.com AUTH=<>", 5));
+    }
+
+    @Test
+    public void testExtractWithAuthVerbAndNoLessThanSymbolAtStartOfEmailAndPrecedingSpace() {
+        assertEquals("test@example.com",
+            extractAndValidate("FROM: test@example.com AUTH=<>", 5));
+    }
+
+    @Test
+    public void testExtractWithAuthVerbAndEmbeddedPersonalName() {
+        assertEquals("Foo Bar <foobar@example.com>",
+            extractAndValidate("FROM:<Foo Bar <foobar@example.com>> AUTH=<>", 5));
+    }
+
+    @Test
+    public void testExtractWithAuthVerbAndEmbeddedPersonalNameAndSpaces() {
+        assertEquals("Foo Bar < foobar@example.com >",
+            extractAndValidate("FROM:<Foo Bar < foobar@example.com >> AUTH=<>", 5));
+    }
+
     private static String extractAndValidate(String args, int offset) {
         String address = EmailUtils.extractEmailAddress(args, offset);
-        assertTrue(EmailUtils.isValidEmailAddress(address));
+        assertTrue(address + " isn't a valid address", EmailUtils.isValidEmailAddress(address));
         return address;
     }
 }
