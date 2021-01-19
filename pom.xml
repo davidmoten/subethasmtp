@@ -6,7 +6,7 @@
         <version>0.1</version>
     </parent>
     <artifactId>subethasmtp</artifactId>
-    <version>5.2.9-SNAPSHOT</version>
+    <version>6.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>A fork of a fork (!) of SubEtha, an easy-to-use server-side SMTP library for Java.</description>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>jakarta.mail</artifactId>
-            <version>1.6.5</version>
+            <version>2.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

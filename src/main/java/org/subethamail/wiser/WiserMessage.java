@@ -3,9 +3,9 @@ package org.subethamail.wiser;
 import java.io.ByteArrayInputStream;
 import java.io.PrintStream;
 
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.internet.MimeMessage;
 
 import org.subethamail.smtp.internal.Constants;
 

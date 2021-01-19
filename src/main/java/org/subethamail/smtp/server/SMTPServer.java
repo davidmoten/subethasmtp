@@ -96,8 +96,8 @@ public final class SMTPServer implements SSLSocketCreator {
      * Normally you would not want to advertise AUTH related capabilities before a 
      * STARTTLS is sent so that credentials do not go in the clear. However, the use 
      * of implicit STARTTLS (the property `mail.smtp.starttls.enable` is not set) by
-     * a javax.mail client (e.g. 1.6.4) prevents AUTH happening. See issue #21. To resolve
-     * this issue with javax.mail and implicit STARTTLS we provide explicit control 
+     * a jakarta.mail client (e.g. 1.6.4) prevents AUTH happening. See issue #21. To resolve
+     * this issue with jakarta.mail and implicit STARTTLS we provide explicit control 
      * over if AUTH capabilities are shown before STARTTLS. 
      */
     private final boolean showAuthCapabilitiesBeforeSTARTTLS;
@@ -196,8 +196,8 @@ public final class SMTPServer implements SSLSocketCreator {
          * Normally you would not want to advertise AUTH related capabilities before a 
          * STARTTLS is sent so that credentials do not go in the clear. However, the use 
          * of implicit STARTTLS (the property `mail.smtp.starttls.enable` is not set) by
-         * a javax.mail client (e.g. 1.6.4) prevents AUTH happening. See issue #21. To resolve
-         * this issue with javax.mail and implicit STARTTLS we provide explicit control 
+         * a jakarta.mail client (e.g. 1.6.4) prevents AUTH happening. See issue #21. To resolve
+         * this issue with jakarta.mail and implicit STARTTLS we provide explicit control 
          * over if AUTH capabilities are shown before STARTTLS. 
          */
         private boolean showAuthCapabilitiesBeforeSTARTTLS = false;
@@ -433,8 +433,8 @@ public final class SMTPServer implements SSLSocketCreator {
          * <p>Normally you would not want to advertise AUTH related capabilities before a 
          * STARTTLS is sent so that credentials do not go in the clear. However, the use 
          * of implicit STARTTLS (the property `mail.smtp.starttls.enable` is not set) by
-         * a javax.mail client (e.g. 1.6.4) prevents AUTH happening. See issue #21. To resolve
-         * this issue with javax.mail and implicit STARTTLS we provide explicit control 
+         * a jakarta.mail client (e.g. 1.6.4) prevents AUTH happening. See issue #21. To resolve
+         * this issue with jakarta.mail and implicit STARTTLS we provide explicit control 
          * over if AUTH capabilities are shown before STARTTLS. 
          * 
          * @param value boolean value, default is false

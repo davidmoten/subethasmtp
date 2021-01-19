@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.mail.MessagingException;
-import javax.mail.Session;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

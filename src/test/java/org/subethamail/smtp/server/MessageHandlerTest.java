@@ -3,7 +3,7 @@ package org.subethamail.smtp.server;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 import org.junit.Assert;
 import org.junit.Test;

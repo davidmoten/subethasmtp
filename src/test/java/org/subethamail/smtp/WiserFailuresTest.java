@@ -9,12 +9,12 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 
 import junit.framework.TestCase;
 
@@ -216,7 +216,7 @@ public class WiserFailuresTest extends TestCase {
                 transport.sendMessage(msg,
                         InternetAddress.parse("dimiter.bakardjiev@musala.com", false));
                 assertEquals(2, this.server.getMessages().size());
-            } catch (javax.mail.MessagingException me) {
+            } catch (jakarta.mail.MessagingException me) {
                 me.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();

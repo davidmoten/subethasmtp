@@ -2,7 +2,7 @@ package org.subethamail.smtp;
 
 import java.util.Properties;
 
-import javax.mail.Session;
+import jakarta.mail.Session;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
