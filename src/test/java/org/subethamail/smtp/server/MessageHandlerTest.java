@@ -3,8 +3,6 @@ package org.subethamail.smtp.server;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.mail.MessagingException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -17,6 +15,8 @@ import org.subethamail.smtp.RejectException;
 import org.subethamail.smtp.client.SMTPException;
 import org.subethamail.smtp.client.SmartClient;
 import org.subethamail.smtp.internal.util.TextUtils;
+
+import jakarta.mail.MessagingException;
 
 /**
  * This class tests whether the event handler methods defined in MessageHandler

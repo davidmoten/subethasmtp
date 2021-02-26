@@ -2,15 +2,15 @@ package org.subethamail.smtp;
 
 import java.util.Properties;
 
-import javax.mail.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.subethamail.wiser.Wiser;
+
+import jakarta.mail.Session;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.subethamail.wiser.Wiser;
 
 /**
  * This class attempts to quickly start/stop 10 Wiser servers. It makes sure that the socket bind address is correctly

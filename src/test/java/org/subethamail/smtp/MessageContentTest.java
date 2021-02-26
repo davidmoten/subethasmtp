@@ -6,17 +6,17 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.activation.DataHandler;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.util.ByteArrayDataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.subethamail.wiser.Wiser;
+
+import jakarta.activation.DataHandler;
+import jakarta.mail.Message;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.util.ByteArrayDataSource;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
