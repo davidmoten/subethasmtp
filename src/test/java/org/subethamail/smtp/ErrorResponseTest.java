@@ -1,34 +1,22 @@
 package org.subethamail.smtp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.util.Properties;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-
+import com.sun.mail.smtp.SMTPSendFailedException;
 import jakarta.activation.DataHandler;
 import jakarta.activation.DataSource;
 import jakarta.activation.FileDataSource;
-import jakarta.mail.BodyPart;
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Multipart;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
-import jakarta.mail.internet.AddressException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeBodyPart;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.internet.MimeMultipart;
-
+import jakarta.mail.*;
+import jakarta.mail.internet.*;
 import org.junit.Test;
 import org.subethamail.smtp.helper.BasicMessageListener;
 import org.subethamail.smtp.server.SMTPServer;
 
-import com.sun.mail.smtp.SMTPSendFailedException;
+import java.io.File;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import static org.junit.Assert.*;
 
 public class ErrorResponseTest {
 
@@ -45,7 +33,7 @@ public class ErrorResponseTest {
             int count = 0;
 
             @Override
-            public void messageArrived(MessageContext context, String from, String to, byte[] data)
+            public void messageArrived(MessageContext context, String from, List<String> to, byte[] data)
                     throws RejectException {
                 count++;
                 if (count == 1) {

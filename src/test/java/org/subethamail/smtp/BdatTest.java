@@ -1,18 +1,19 @@
 package org.subethamail.smtp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.subethamail.smtp.client.SMTPException;
 import org.subethamail.smtp.client.SmartClient;
 import org.subethamail.smtp.helper.BasicMessageListener;
 import org.subethamail.smtp.server.SMTPServer;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class BdatTest {
 
@@ -137,13 +138,13 @@ public class BdatTest {
     static final class MyListener implements BasicMessageListener {
 
         String from;
-        String to;
+        List<String> to;
         byte[] data;
 
         int count = 0;
 
         @Override
-        public void messageArrived(MessageContext context, String from, String to, byte[] data) throws RejectException {
+        public void messageArrived(MessageContext context, String from, List<String> to, byte[] data) throws RejectException {
             this.from = from;
             this.to = to;
             this.data = data;
