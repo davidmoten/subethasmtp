@@ -1,6 +1,7 @@
-package org.subethamail.smtp.helper;
+package org.subethamail.smtp.internal.helper;
 
 import org.subethamail.smtp.*;
+import org.subethamail.smtp.helper.BasicMessageListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
