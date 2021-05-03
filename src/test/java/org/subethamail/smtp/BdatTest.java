@@ -1,18 +1,19 @@
 package org.subethamail.smtp;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.Ignore;
 import org.junit.Test;
 import org.subethamail.smtp.client.SMTPException;
 import org.subethamail.smtp.client.SmartClient;
 import org.subethamail.smtp.helper.BasicMessageListener;
 import org.subethamail.smtp.server.SMTPServer;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class BdatTest {
 
@@ -29,7 +30,7 @@ public class BdatTest {
             client.bdatLast("hello");
             assertEquals("hello", listener.dataAsText());
             assertEquals("me@oz.com", listener.from);
-            assertEquals("dave@oz.com", listener.to);
+            assertEquals("dave@oz.com", listener.to.get(0));
         } finally {
             server.stop();
         }
@@ -70,7 +71,7 @@ public class BdatTest {
             client.bdatLast("there");
             assertEquals("hellothere", listener.dataAsText());
             assertEquals("me@oz.com", listener.from);
-            assertEquals("dave@oz.com", listener.to);
+            assertEquals("dave@oz.com", listener.to.get(0));
         } finally {
             server.stop();
         }
@@ -128,7 +129,7 @@ public class BdatTest {
             assertEquals(2, listener.count);
             assertEquals("hello2there2", listener.dataAsText());
             assertEquals("me2@oz.com", listener.from);
-            assertEquals("dave2@oz.com", listener.to);
+            assertEquals("dave2@oz.com", listener.to.get(0));
         } finally {
             server.stop();
         }
@@ -137,13 +138,13 @@ public class BdatTest {
     static final class MyListener implements BasicMessageListener {
 
         String from;
-        String to;
+        List<String> to;
         byte[] data;
 
         int count = 0;
 
         @Override
-        public void messageArrived(MessageContext context, String from, String to, byte[] data) throws RejectException {
+        public void messageArrived(MessageContext context, String from, List<String> to, byte[] data) throws RejectException {
             this.from = from;
             this.to = to;
             this.data = data;

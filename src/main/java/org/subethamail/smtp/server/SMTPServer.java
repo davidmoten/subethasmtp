@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.subethamail.smtp.AuthenticationHandlerFactory;
 import org.subethamail.smtp.MessageHandlerFactory;
 import org.subethamail.smtp.Version;
-import org.subethamail.smtp.helper.BasicMessageHandlerFactory;
+import org.subethamail.smtp.internal.helper.BasicMessageHandlerFactory;
 import org.subethamail.smtp.helper.BasicMessageListener;
 import org.subethamail.smtp.helper.SimpleMessageListener;
 import org.subethamail.smtp.helper.SimpleMessageListenerAdapter;

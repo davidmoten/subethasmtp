@@ -1,14 +1,13 @@
-package org.subethamail.smtp.helper;
+package org.subethamail.smtp.internal.helper;
+
+import org.subethamail.smtp.*;
+import org.subethamail.smtp.helper.BasicMessageListener;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.subethamail.smtp.MessageContext;
-import org.subethamail.smtp.MessageHandler;
-import org.subethamail.smtp.MessageHandlerFactory;
-import org.subethamail.smtp.RejectException;
-import org.subethamail.smtp.TooMuchDataException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasicMessageHandlerFactory implements MessageHandlerFactory {
 
@@ -30,7 +29,7 @@ public class BasicMessageHandlerFactory implements MessageHandlerFactory {
         private final BasicMessageListener listener;
 
         private String from;
-        private String recipient;
+        private List<String> recipients = new ArrayList<>();
 
         private final MessageContext context;
         private final int maxMessageSize;
@@ -50,7 +49,7 @@ public class BasicMessageHandlerFactory implements MessageHandlerFactory {
 
         @Override
         public void recipient(String recipient) throws RejectException {
-            this.recipient = recipient;
+            this.recipients.add(recipient);
         }
 
         @Override
@@ -63,10 +62,10 @@ public class BasicMessageHandlerFactory implements MessageHandlerFactory {
                 if (from == null) {
                     throw new RejectException("from not set");
                 }
-                if (recipient == null) {
-                    throw new RejectException("recipient not set");
+                if (recipients.isEmpty()) {
+                    throw new RejectException("recipients not set");
                 }
-                listener.messageArrived(context, from, recipient, bytes);
+                listener.messageArrived(context, from, recipients, bytes);
 
                 return null;
             } catch (RuntimeException e) {
