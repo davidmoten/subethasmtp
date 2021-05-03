@@ -30,7 +30,7 @@ public class BdatTest {
             client.bdatLast("hello");
             assertEquals("hello", listener.dataAsText());
             assertEquals("me@oz.com", listener.from);
-            assertEquals("dave@oz.com", listener.to);
+            assertEquals("dave@oz.com", listener.to.get(0));
         } finally {
             server.stop();
         }
@@ -71,7 +71,7 @@ public class BdatTest {
             client.bdatLast("there");
             assertEquals("hellothere", listener.dataAsText());
             assertEquals("me@oz.com", listener.from);
-            assertEquals("dave@oz.com", listener.to);
+            assertEquals("dave@oz.com", listener.to.get(0));
         } finally {
             server.stop();
         }
@@ -129,7 +129,7 @@ public class BdatTest {
             assertEquals(2, listener.count);
             assertEquals("hello2there2", listener.dataAsText());
             assertEquals("me2@oz.com", listener.from);
-            assertEquals("dave2@oz.com", listener.to);
+            assertEquals("dave2@oz.com", listener.to.get(0));
         } finally {
             server.stop();
         }
