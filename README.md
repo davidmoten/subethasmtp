@@ -17,7 +17,7 @@ This component can be used in almost any kind of email  processing application. 
   * [Mireka](http://code.google.com/p/mireka/) - Mail server and SMTP proxy with detailed logging, statistics and built-in, fail-fast filters
   
 ## Features
-* Supports minimum SMTP specification described in [rfc2821](https://www.ietf.org/rfc/rfc2821.txt) (4.5.1)
+* Supports minimum SMTP specification described in [rfc2821](https://tools.ietf.org/html/rfc2821#section-4.5.1) (4.5.1)
 * Supports STARTTLS 
 * Supports SMTP AUTH
 * Supports SMTP over SSL/TLS (via specification of server socket factories)
