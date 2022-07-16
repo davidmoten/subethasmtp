@@ -102,6 +102,7 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>findbugs-annotations</artifactId>
             <version>3.0.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.github.davidmoten</groupId>
