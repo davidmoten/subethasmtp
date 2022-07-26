@@ -29,7 +29,12 @@ public class RejectException extends Exception
 
 	public RejectException(int code, String message)
 	{
-		super(message, null, true, false);
+		this(code, message, null);
+	}
+
+	public RejectException(int code, String message, Throwable cause)
+	{
+		super(message, cause, true, false);
 
 		this.code = code;
 	}
