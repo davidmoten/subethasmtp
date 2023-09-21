@@ -30,7 +30,7 @@ import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.MessageHandler;
 import org.subethamail.smtp.RejectException;
 import org.subethamail.smtp.TooMuchDataException;
-import org.subethamail.smtp.helper.BasicMessageHandlerFactory;
+import org.subethamail.smtp.internal.helper.BasicMessageHandlerFactory;
 import org.subethamail.smtp.helper.BasicMessageListener;
 
 public class BasicMessageHandlerFactoryTest {

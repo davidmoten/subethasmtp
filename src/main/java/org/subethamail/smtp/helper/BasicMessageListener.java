@@ -3,6 +3,8 @@ package org.subethamail.smtp.helper;
 import org.subethamail.smtp.MessageContext;
 import org.subethamail.smtp.RejectException;
 
+import java.util.List;
+
 public interface BasicMessageListener {
 
     /**
@@ -18,6 +20,6 @@ public interface BasicMessageListener {
      * @throws RejectException
      *             when caller to be given an SMTP error response
      */
-    void messageArrived(MessageContext context, String from, String to, byte[] data) throws RejectException;
+    void messageArrived(MessageContext context, String from, List<String> to, byte[] data) throws RejectException;
 
 }
