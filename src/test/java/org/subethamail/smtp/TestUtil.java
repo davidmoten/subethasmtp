@@ -86,8 +86,10 @@ class TestUtil {
         props.put("mail.smtp.port", PORT + "");
         if (connectionType == ConnectionType.START_TLS) {
             props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtp.ssl.checkserveridentity", "false");
         } else {
             props.put("mail.smtp.ssl.enable", "true");
+            props.put("mail.smtp.ssl.checkserveridentity", "false");
         }
         if (username != null) {
             props.setProperty("mail.smtp.submitter", username);
