@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.subethamail.wiser.Wiser;
 import org.subethamail.wiser.WiserMessage;
 
-import com.sun.mail.smtp.SMTPTransport;
+import org.eclipse.angus.mail.smtp.SMTPTransport;
 
 /**
  * This class tests the transfer speed of emails that carry

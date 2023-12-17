@@ -31,7 +31,7 @@ import javax.net.ssl.TrustManager;
 
 import org.subethamail.util.ExtendedTrustManager;
 
-import com.sun.mail.util.MailSSLSocketFactory;
+import org.eclipse.angus.mail.util.MailSSLSocketFactory;
 
 class TestUtil {
 

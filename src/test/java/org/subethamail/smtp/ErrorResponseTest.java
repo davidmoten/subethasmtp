@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.subethamail.smtp.helper.BasicMessageListener;
 import org.subethamail.smtp.server.SMTPServer;
 
-import com.sun.mail.smtp.SMTPSendFailedException;
+import org.eclipse.angus.mail.smtp.SMTPSendFailedException;
 
 public class ErrorResponseTest {
 
