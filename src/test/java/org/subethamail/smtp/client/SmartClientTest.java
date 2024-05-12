@@ -28,10 +28,11 @@ public class SmartClientTest {
             assertEquals("clientHeloHost", client.getHeloHost());
             assertEquals(0, client.getRecipientCount());
             Assert.assertFalse(client.getAuthenticator().isPresent());
-            assertEquals(3, client.getExtensions().size());
+            assertEquals(4, client.getExtensions().size());
             Set<String> set = client.getExtensions().keySet();
             assertTrue(set.contains("8BITMIME"));
             assertTrue(set.contains("CHUNKING"));
+            assertTrue(set.contains("SMTPUTF8"));
             //TODO why is OK in client.getExtensions?
         } finally {
             server.stop();
