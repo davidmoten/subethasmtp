@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +30,7 @@ public class EhloCommandTest {
         System.out.println(output);
         assertTrue(output.contains("250-STARTTLS"));
         assertFalse(output.contains("250-AUTH PLAIN"));
+        assertTrue(output.contains("250-SMTPUTF8"));
     }
     
     @Test
@@ -62,6 +64,8 @@ public class EhloCommandTest {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             Socket socket = Mockito.mock(Socket.class);
             Mockito.when(socket.getOutputStream()).thenReturn(out);
+            InputStream in = Mockito.mock(InputStream.class);
+            Mockito.when(socket.getInputStream()).thenReturn(in);
             SMTPServer server = SMTPServer //
                     .port(ss.getLocalPort()) //
                     .serverSocketFactory(() -> ss) //
@@ -84,8 +88,7 @@ public class EhloCommandTest {
             Session session = new Session(server, new ServerThread(server, ss, ProxyHandler.NOP), socket, ProxyHandler.NOP);
             session.setTlsStarted(isTlsStarted);
             ec.execute("EHLO me.com", session);
-            String output = new String(out.toByteArray(), StandardCharsets.UTF_8);
-            return output;
+            return new String(out.toByteArray(), StandardCharsets.UTF_8);
         }
     }
 

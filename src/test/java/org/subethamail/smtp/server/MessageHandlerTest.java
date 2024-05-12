@@ -39,7 +39,7 @@ public class MessageHandlerTest {
         try {
             SmartClient client = SmartClient.createAndConnect("localhost", server.getPort(), "localhost");
             client.from("john@example.com");
-            client.to("jane@example.com");
+            client.to("eñe@example.com");
             client.dataStart();
             client.dataWrite(TextUtils.getAsciiBytes("body"), 4);
             client.dataEnd();
@@ -50,7 +50,7 @@ public class MessageHandlerTest {
         InOrder o = Mockito.inOrder(f, h);
         o.verify(f).create(ArgumentMatchers.any(MessageContext.class));
         o.verify(h).from("john@example.com");
-        o.verify(h).recipient("jane@example.com");
+        o.verify(h).recipient("eñe@example.com");
         o.verify(h).data(ArgumentMatchers.any(InputStream.class));
         o.verify(h).done();
         Mockito.verifyNoMoreInteractions(f, h);

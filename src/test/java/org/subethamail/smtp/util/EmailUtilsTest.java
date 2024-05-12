@@ -24,6 +24,11 @@ public class EmailUtilsTest {
     public void testBlankAddressIsValid() {
         Assert.assertTrue(EmailUtils.isValidEmailAddress("", true));
     }
+    
+    @Test
+    public void testSpecialUtf8CharacterIsInvalidInEmailAddress() {
+        Assert.assertTrue(EmailUtils.isValidEmailAddress("ñ@abc.com", true));
+    }
 
     @Test
     public void testExtract() {

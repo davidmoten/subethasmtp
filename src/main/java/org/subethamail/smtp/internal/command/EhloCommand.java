@@ -70,6 +70,9 @@ public final class EhloCommand extends BaseCommand
 		// Chunking (BDAT) support
 		response.append("\r\n250-CHUNKING");
 
+		// SMTPUTF8 support
+		response.append("\r\n250-SMTPUTF8");
+		
 		// Check to see if we support authentication
 		Optional<AuthenticationHandlerFactory> authFact = sess.getServer().getAuthenticationHandlerFactory();
         final boolean displayAuth;
