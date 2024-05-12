@@ -75,7 +75,7 @@ public final class CRLFTerminatedReader extends Reader
 		}
 	}
 
-	private final InputStreamReader in;
+	private final Reader in;
 
 	/**
 	 * Constructs this CRLFTerminatedReader.
@@ -88,7 +88,7 @@ public final class CRLFTerminatedReader extends Reader
 
 	public CRLFTerminatedReader(InputStream in)
 	{
-		this.in = new InputStreamReader(in, StandardCharsets.UTF_8);
+		this.in = new Utf8InputStreamReader(in);
 	}
 
 	private final StringBuffer lineBuffer = new StringBuffer();

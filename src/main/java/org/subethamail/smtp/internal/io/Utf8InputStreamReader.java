@@ -1,4 +1,4 @@
-package org.subethamail.smtp.internal.util;
+package org.subethamail.smtp.internal.io;
 
 import java.io.EOFException;
 import java.io.IOException;
