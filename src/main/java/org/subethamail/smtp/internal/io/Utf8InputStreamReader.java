@@ -88,34 +88,27 @@ public final class Utf8InputStreamReader extends Reader {
     }
 
     private static boolean isContinuation(int a) {
-        boolean b1 = ((a >> 7) & 1) == 1;
-        if (!b1) {
+        if (!bit(a, 1)) {
             return false;
         } else {
-            boolean b2 = ((a >> 6) & 1) == 1;
-            return !b2;
+            return !bit(a, 2);
         }
     }
 
     // VisibleForTesting
     static int numBytes(int a) {
-        boolean b1 = bit(a, 1);
-        if (!b1) {
+        if (!bit(a, 1)) {
             return 1;
         } else {
-            boolean b2 = bit(a, 2);
-            boolean b3 = bit(a, 3);
-            if (!b2) {
+            if (!bit(a, 2)) {
                 throw new IllegalStateException("leading bits 10 illegal for first byte of UTF-8 character");
-            } else if (!b3) {
+            } else if (!bit(a, 3)) {
                 return 2;
             } else {
-                boolean b4 = bit(a, 4);
-                if (!b4) {
+                if (!bit(a, 4)) {
                     return 3;
                 } else {
-                    boolean b5 = bit(a, 5);
-                    if (!b5) {
+                    if (!bit(a, 5)) {
                         return 4;
                     } else {
                         throw new IllegalStateException("leading bits 11111 illegal for first byte of UTF-8 character");
