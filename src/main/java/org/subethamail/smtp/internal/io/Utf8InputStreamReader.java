@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -21,6 +22,7 @@ public final class Utf8InputStreamReader extends Reader {
 
     private final InputStream in;
     private final ByteBuffer bb = ByteBuffer.allocate(4);
+    private int leftOver = -1;
 
     public Utf8InputStreamReader(InputStream in) {
         this.in = in;
@@ -44,6 +46,11 @@ public final class Utf8InputStreamReader extends Reader {
 
     @Override
     public int read() throws IOException {
+        if (leftOver != -1) {
+            int v = leftOver;
+            leftOver = -1;
+            return v;
+        }
         int b = in.read();
         if (b == -1) {
             return b;
@@ -65,7 +72,11 @@ public final class Utf8InputStreamReader extends Reader {
                 bb.put(a);
             }
             bb.flip();
-            return DECODER.decode(bb).get();
+            CharBuffer r = DECODER.decode(bb);
+            if (r.limit() > 1) {
+                leftOver = r.get();    
+            }
+            return r.get();
         }
     }
 
