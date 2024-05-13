@@ -67,16 +67,18 @@ public final class Utf8InputStreamReader extends Reader {
                     throw new EOFException();
                 }
                 if (!isContinuation(a)) {
-                    throw new IllegalStateException("wrong continuation bits, bytes after first in a UTF-8 character must start with bits 10");
+                    throw new IllegalStateException(
+                            "wrong continuation bits, bytes after first in a UTF-8 character must start with bits 10");
                 }
                 bb.put(a);
             }
             bb.flip();
             CharBuffer r = DECODER.decode(bb);
+            int v = r.get();
             if (r.limit() > 1) {
-                leftOver = r.get();    
+                leftOver = r.get();
             }
-            return r.get();
+            return v;
         }
     }
 
@@ -95,23 +97,24 @@ public final class Utf8InputStreamReader extends Reader {
         }
     }
 
-    private static int numBytes(int a) {
-        boolean b1 = ((a >> 7) & 1) == 1;
+    // VisibleForTesting
+    static int numBytes(int a) {
+        boolean b1 = bit(a, 1);
         if (!b1) {
             return 1;
         } else {
-            boolean b2 = ((a >> 6) & 1) == 1;
-            boolean b3 = ((a >> 5) & 1) == 1;
+            boolean b2 = bit(a, 2);
+            boolean b3 = bit(a, 3);
             if (!b2) {
                 throw new IllegalStateException("leading bits 10 illegal for first byte of UTF-8 character");
             } else if (!b3) {
                 return 2;
             } else {
-                boolean b4 = ((a >> 4) & 1) == 1;
+                boolean b4 = bit(a, 4);
                 if (!b4) {
                     return 3;
                 } else {
-                    boolean b5 = ((a >> 3) & 1) == 1;
+                    boolean b5 = bit(a, 5);
                     if (!b5) {
                         return 4;
                     } else {
@@ -122,4 +125,7 @@ public final class Utf8InputStreamReader extends Reader {
         }
     }
 
+    private static boolean bit(int a, int index) {
+        return ((a >> (8 - index)) & 1) == 1;
+    }
 }
