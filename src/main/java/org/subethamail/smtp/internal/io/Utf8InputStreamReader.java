@@ -67,7 +67,7 @@ public final class Utf8InputStreamReader extends Reader {
                     throw new EOFException();
                 }
                 if (!isContinuation(a)) {
-                    throw new IllegalStateException(
+                    throw new IOException(
                             "wrong continuation bits, bytes after first in a UTF-8 character must start with bits 10");
                 }
                 bb.put(a);
@@ -96,12 +96,12 @@ public final class Utf8InputStreamReader extends Reader {
     }
 
     // VisibleForTesting
-    static int numBytes(int a) {
+    static int numBytes(int a) throws IOException {
         if (!bit(a, 1)) {
             return 1;
         } else {
             if (!bit(a, 2)) {
-                throw new IllegalStateException("leading bits 10 illegal for first byte of UTF-8 character");
+                throw new IOException("leading bits 10 illegal for first byte of UTF-8 character");
             } else if (!bit(a, 3)) {
                 return 2;
             } else {
@@ -111,7 +111,7 @@ public final class Utf8InputStreamReader extends Reader {
                     if (!bit(a, 5)) {
                         return 4;
                     } else {
-                        throw new IllegalStateException("leading bits 11111 illegal for first byte of UTF-8 character");
+                        throw new IOException("leading bits 11111 illegal for first byte of UTF-8 character");
                     }
                 }
             }

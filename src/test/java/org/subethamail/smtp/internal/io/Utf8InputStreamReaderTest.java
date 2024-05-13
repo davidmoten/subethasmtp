@@ -64,7 +64,7 @@ public class Utf8InputStreamReaderTest {
         byte[] bytes = "£".getBytes(StandardCharsets.UTF_8);
         byte[] b = new byte[] { bytes[0], bytes[0] };
         try (Reader r = new Utf8InputStreamReader(new ByteArrayInputStream(b))) {
-            assertThrows(IllegalStateException.class, () -> r.read());
+            assertThrows(IOException.class, () -> r.read());
         }
     }
 
@@ -73,7 +73,7 @@ public class Utf8InputStreamReaderTest {
         byte[] bytes = "£".getBytes(StandardCharsets.UTF_8);
         byte[] b = new byte[] { bytes[0], '$' };
         try (Reader r = new Utf8InputStreamReader(new ByteArrayInputStream(b))) {
-            assertThrows(IllegalStateException.class, () -> r.read());
+            assertThrows(IOException.class, () -> r.read());
         }
     }
 
@@ -82,7 +82,7 @@ public class Utf8InputStreamReaderTest {
         byte[] bytes = "£".getBytes(StandardCharsets.UTF_8);
         byte[] b = new byte[] { bytes[1] };
         try (Reader r = new Utf8InputStreamReader(new ByteArrayInputStream(b))) {
-            assertThrows(IllegalStateException.class, () -> r.read());
+            assertThrows(IOException.class, () -> r.read());
         }
     }
 
@@ -90,12 +90,12 @@ public class Utf8InputStreamReaderTest {
     public void testUtf8ByteHasTooManyLeadingOnes() throws IOException {
         byte[] b = new byte[] { (byte) 248 };
         try (Reader r = new Utf8InputStreamReader(new ByteArrayInputStream(b))) {
-            assertThrows(IllegalStateException.class, () -> r.read());
+            assertThrows(IOException.class, () -> r.read());
         }
     }
 
     @Test
-    public void testNumBytes() {
+    public void testNumBytes() throws IOException {
         assertEquals(1, numBytes('$'));
     }
 
