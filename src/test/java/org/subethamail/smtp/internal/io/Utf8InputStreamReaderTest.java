@@ -35,6 +35,20 @@ public class Utf8InputStreamReaderTest {
     }
     
     @Test
+    public void testReadIntoArray() throws IOException {
+        final char[] chars = Character.toChars(0x1F701);
+        final String str = new String(chars);
+        String s = "$£Иह€한薠" + str;
+        try (Reader r = reader(s)) {
+            char[] chrs = new char[1000];
+            int n = r.read(chrs, 0, 2);
+            n+= r.read(chrs, 2, 1000);
+            assertEquals(9, n);
+            assertEquals(-1, r.read(chrs));
+        }
+    }
+    
+    @Test
     public void testNumBytes() {
         assertEquals(1, numBytes('$'));
     }
