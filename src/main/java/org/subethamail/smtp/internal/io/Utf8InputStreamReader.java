@@ -9,7 +9,11 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.StandardCharsets;
 
 /**
- * No-buffering InputStream Reader for UTF-8 encoded strings.
+ * No-buffering, no-locking (not thread-safe) InputStream Reader for UTF-8
+ * encoded strings. This class exists mainly because
+ * {@code java.io.InputStreamReader} does more buffering than strictly necessary
+ * (for performance reasons) and this stuffs up passing the underlying
+ * InputStream from command to command.
  */
 public final class Utf8InputStreamReader extends Reader {
 
@@ -56,7 +60,7 @@ public final class Utf8InputStreamReader extends Reader {
                     throw new EOFException();
                 }
                 if (!isContinuation(a)) {
-                    throw new IllegalStateException("wrong continuation bits");
+                    throw new IllegalStateException("wrong continuation bits, bytes after first in a UTF-8 character must start with bits 10");
                 }
                 bb.put(a);
             }
@@ -88,7 +92,7 @@ public final class Utf8InputStreamReader extends Reader {
             boolean b2 = ((a >> 6) & 1) == 1;
             boolean b3 = ((a >> 5) & 1) == 1;
             if (!b2) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("leading bits 10 illegal for first byte of UTF-8 character");
             } else if (!b3) {
                 return 2;
             } else {
@@ -100,7 +104,7 @@ public final class Utf8InputStreamReader extends Reader {
                     if (!b5) {
                         return 4;
                     } else {
-                        throw new IllegalStateException();
+                        throw new IllegalStateException("leading bits 11111 illegal for first byte of UTF-8 character");
                     }
                 }
             }
