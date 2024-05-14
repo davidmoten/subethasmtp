@@ -6,7 +6,7 @@
         <version>0.1</version>
     </parent>
     <artifactId>subethasmtp</artifactId>
-    <version>7.0.3-SNAPSHOT</version>
+    <version>7.1.0</version>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
     <description>A fork of a fork (!) of SubEtha, an easy-to-use server-side SMTP library for Java.</description>
@@ -27,7 +27,7 @@
         <connection>scm:git:https://github.com/davidmoten/subethasmtp.git</connection>
         <developerConnection>scm:git:https://github.com/davidmoten/subethasmtp.git</developerConnection>
         <url>scm:git:https://github.com:davidmoten/subethasmtp.git</url>
-        <tag>HEAD</tag>
+        <tag>7.1.0</tag>
     </scm>
     <issueManagement>
         <system>GitHub</system>
