@@ -15,6 +15,8 @@ import org.subethamail.smtp.internal.server.BaseCommand;
 import org.subethamail.smtp.server.SMTPServer;
 import org.subethamail.smtp.server.Session;
 
+import javax.annotation.Nonnull;
+
 /**
  * @author Ian McFarland &lt;ian@neo.com&gt;
  * @author Jon Stevens
@@ -41,20 +43,8 @@ public final class DataCommand extends BaseCommand {
 
         sess.sendResponse("354 End data with <CR><LF>.<CR><LF>");
 
-        InputStream stream = sess.getRawInput();
-        stream = new BufferedInputStream(stream, BUFFER_SIZE);
-        stream = new DotTerminatedInputStream(stream);
-        stream = new DotUnstuffingInputStream(stream);
-        SMTPServer server = sess.getServer();
-        if (!server.getDisableReceivedHeaders()) {
-            stream = new ReceivedHeaderStream(stream, sess.getHelo(),
-                    sess.getRemoteAddress().getAddress(), server.getHostName(),
-                    Optional.of(server.getSoftwareName()), sess.getSessionId(),
-                    sess.getSingleRecipient());
-        }
-
         String dataMessage = null;
-        try {
+        try (InputStream stream = getInputStream(sess)) {
             dataMessage = sess.getMessageHandler().data(stream);
 
             // Just in case the handler didn't consume all the data, we might as
@@ -77,5 +67,17 @@ public final class DataCommand extends BaseCommand {
             sess.sendResponse("250 Ok");
         }
         sess.resetMailTransaction();
+    }
+
+    private @Nonnull InputStream getInputStream(Session sess) {
+        InputStream stream = new BufferedInputStream(sess.getRawInput(), BUFFER_SIZE);
+        stream = new DotTerminatedInputStream(stream);
+        stream = new DotUnstuffingInputStream(stream);
+        SMTPServer server = sess.getServer();
+
+        return server.getDisableReceivedHeaders() ? stream : new ReceivedHeaderStream(stream, sess.getHelo(),
+                sess.getRemoteAddress().getAddress(), server.getHostName(),
+                Optional.of(server.getSoftwareName()), sess.getSessionId(),
+                sess.getSingleRecipient());
     }
 }
