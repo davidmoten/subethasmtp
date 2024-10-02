@@ -41,7 +41,7 @@ SMTPServer server = SMTPServer
 SMTPServer server = SMTPServer //
   .port(PORT) //
   .messageHandler(
-    (from, to, data) -> 
+    (ctx, from, to, data) -> 
        System.out.println(
            "message from " + from 
            + " to " + to
