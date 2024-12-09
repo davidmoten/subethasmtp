@@ -108,4 +108,9 @@ public final class DotTerminatedInputStream extends InputStream
 		nextBytes[1] = nextBytes[2];
 		nextBytes[2] = in.read();
 	}
+
+	@Override
+	public void close() throws IOException {
+		in.close();
+	}
 }
