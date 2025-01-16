@@ -12,14 +12,14 @@ import org.subethamail.smtp.auth.UsernamePasswordValidator;
 public class PlainAuthenticationHandlerFactoryTest {
 
     @Test
-    public void test() throws RejectException {
-        MessageContext context = Mockito.mock(MessageContext.class);
+    public void testBadBase64String() throws RejectException {
         UsernamePasswordValidator validator = (username, password, c) -> {
             if (!username.equals("fred") || !password.equals("blah")) {
                 throw new LoginFailedException();
             }
         };
         AuthenticationHandler auth = new PlainAuthenticationHandlerFactory(validator).create();
+        MessageContext context = Mockito.mock(MessageContext.class);
         try {
             auth.auth("AUTH PLAIN b", context);
             Assert.fail();
