@@ -243,5 +243,4 @@ public class AuthTest extends ServerTestCase {
         send("bad-password");
         expect("501");
     }
-    
 }
