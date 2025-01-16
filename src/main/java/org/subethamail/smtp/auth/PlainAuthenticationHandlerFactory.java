@@ -84,10 +84,16 @@ public final class PlainAuthenticationHandlerFactory implements AuthenticationHa
 				}
 			}
 
-			byte[] decodedSecret = Base64.getDecoder().decode(secret);
-			if (decodedSecret == null)
+			byte[] decodedSecret;
+            try {
+                decodedSecret = Base64.getDecoder().decode(secret);
+            } catch (IllegalArgumentException e) {
+                decodedSecret = null;
+            }
+			if (decodedSecret == null) {
 				throw new RejectException(501, /*5.5.4*/
 						"Invalid command argument, not a valid Base64 string");
+			}
 
 			/*
 			 * RFC4616: The client presents the authorization identity (identity
