@@ -36,10 +36,9 @@ public final class BdatCommand extends BaseCommand {
             return;
         }
 
-        InputStream stream = new BdatInputStream(sess.getRawInput(), sess, bdat.size, bdat.isLast);
 
         String dataMessage = null;
-        try {
+        try (InputStream stream = new BdatInputStream(sess.getRawInput(), sess, bdat.size, bdat.isLast)) {
             dataMessage = sess.getMessageHandler().data(stream);
 
             // Just in case the handler didn't consume all the data, we might as

@@ -1,5 +1,6 @@
 package org.subethamail.smtp.server;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -65,7 +66,7 @@ public final class Session implements Runnable, MessageContext {
 
     /** I/O to the client */
     private Socket socket;
-    private InputStream input;
+    private NonClosableInputStream input;
     private CRLFTerminatedReader reader;
     private OutputStream output;
     private PrintWriter writer;
@@ -297,7 +298,7 @@ public final class Session implements Runnable, MessageContext {
         try {
             try {
                 this.writer.close();
-                this.input.close();
+                this.input.closeActually();
             } finally {
                 this.closeSocket();
             }
@@ -313,7 +314,7 @@ public final class Session implements Runnable, MessageContext {
      */
     public void setSocket(Socket socket) throws IOException {
         this.socket = socket;
-        this.input = this.socket.getInputStream();
+        this.input = new NonClosableInputStream(this.socket.getInputStream());
         this.reader = new CRLFTerminatedReader(this.input);
         this.output = this.socket.getOutputStream();
         this.writer = new PrintWriter(this.output);
@@ -550,5 +551,41 @@ public final class Session implements Runnable, MessageContext {
     @Override
     public Certificate[] getTlsPeerCertificates() {
         return tlsPeerCertificates;
+    }
+
+    /**
+     * An InputStream class that on {@link #close()} call will not close underlying stream.
+     * To actually close underlying stream, call the method {@link #closeActually()}
+     */
+    private static final class NonClosableInputStream extends FilterInputStream {
+
+        private final InputStream decorated;
+
+        /**
+         * Creates a <code>FilterInputStream</code>
+         * by assigning the  argument <code>decorated</code>
+         * to the field <code>this.decorated</code> so as
+         * to remember it for later use.
+         *
+         * @param decorated the underlying input stream, or <code>null</code> if
+         *           this instance is to be created without an underlying stream.
+         */
+        protected NonClosableInputStream(InputStream decorated) {
+            super(decorated);
+            this.decorated = decorated;
+        }
+
+        @Override
+        public void close() {
+
+        }
+
+        /**
+         * Close stream, actually.
+         * @throws IOException
+         */
+        public void closeActually() throws IOException {
+            this.decorated.close();
+        }
     }
 }
