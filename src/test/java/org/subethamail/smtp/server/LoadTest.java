@@ -20,7 +20,7 @@ import jakarta.mail.internet.MimeMultipart;
 
 public class LoadTest {
 
-    private final static int messages = 200000;
+    private final static int messages = 5000000;
     private final static int port = 1234;
 
     public static final class Server {
@@ -42,14 +42,14 @@ public class LoadTest {
             latch.await();
             server.stop(); // wait for the server to catch up
 
-            System.out
-                    .println(1000.0 * messages * messages / (messages - 1) / (System.currentTimeMillis() - startTime[0])
-                            + " messages/s");
+            long t = (System.currentTimeMillis() - startTime[0]);
+            System.out.println(1000.0 * messages * messages / (messages - 1) / t + " messages/s");
+            System.out.println("total time = " + t/1000 + "s");
         }
     }
 
     public static final class Client {
-        
+
         public static void main(String[] args) throws MessagingException, InterruptedException {
             String to = "you@yours.com";
             String from = "me@mine.com";
