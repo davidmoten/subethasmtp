@@ -8,8 +8,9 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -21,9 +22,6 @@ import com.github.davidmoten.guavamini.Preconditions;
  * Prepends a Received: header at the beginning of the input stream.
  */
 public final class ReceivedHeaderStream extends FilterInputStream {
-    
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z (z)", Locale.US);
-    
     ByteArrayInputStream header;
 
     /**
@@ -58,8 +56,8 @@ public final class ReceivedHeaderStream extends FilterInputStream {
         Preconditions.checkNotNull(heloHost);
         Preconditions.checkNotNull(softwareName);
         Preconditions.checkNotNull(singleRecipient);
-        
-        String timestamp = DATE_TIME_FORMATTER.format(ZonedDateTime.now());
+        DateFormat fmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z (z)", Locale.US);
+        String timestamp = fmt.format(new Date());
 
         StringBuilder header = new StringBuilder();
         header.append("Received: from ").append(heloHost.orElse(null)).append(" (").append(constructTcpInfo(host)).append(")\r\n");
@@ -163,5 +161,4 @@ public final class ReceivedHeaderStream extends FilterInputStream {
     public long skip(long n) throws IOException {
         throw new UnsupportedOperationException();
     }
-    
 }
