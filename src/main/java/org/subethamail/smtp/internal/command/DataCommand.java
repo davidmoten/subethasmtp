@@ -1,6 +1,5 @@
 package org.subethamail.smtp.internal.command;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
@@ -21,7 +20,6 @@ import org.subethamail.smtp.server.Session;
  * @author Jeff Schnitzer
  */
 public final class DataCommand extends BaseCommand {
-    private final static int BUFFER_SIZE = 1024 * 32; // 32k seems reasonable
 
     public DataCommand() {
         super("DATA", "Following text is collected as the message.\n"
@@ -42,7 +40,6 @@ public final class DataCommand extends BaseCommand {
         sess.sendResponse("354 End data with <CR><LF>.<CR><LF>");
 
         InputStream stream = sess.getRawInput();
-        stream = new BufferedInputStream(stream, BUFFER_SIZE);
         stream = new DotTerminatedInputStream(stream);
         stream = new DotUnstuffingInputStream(stream);
         SMTPServer server = sess.getServer();
