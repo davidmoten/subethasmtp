@@ -18,9 +18,8 @@ import java.nio.charset.StandardCharsets;
  */
 public final class Utf8InputStreamReader extends Reader {
 
-    private final CharsetDecoder DECODER = StandardCharsets.UTF_8.newDecoder();
-
     private final InputStream in;
+    private final CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder();
     private final ByteBuffer bb = ByteBuffer.allocate(4);
     private int leftOver = -1;
 
@@ -73,7 +72,7 @@ public final class Utf8InputStreamReader extends Reader {
                 bb.put(a);
             }
             bb.flip();
-            CharBuffer r = DECODER.decode(bb);
+            CharBuffer r = decoder.decode(bb);
             int v = r.get();
             if (r.limit() > 1) {
                 leftOver = r.get();
