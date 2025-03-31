@@ -18,7 +18,7 @@ import java.nio.charset.StandardCharsets;
  */
 public final class Utf8InputStreamReader extends Reader {
 
-    private static final CharsetDecoder DECODER = StandardCharsets.UTF_8.newDecoder();
+    private final CharsetDecoder DECODER = StandardCharsets.UTF_8.newDecoder();
 
     private final InputStream in;
     private final ByteBuffer bb = ByteBuffer.allocate(4);
