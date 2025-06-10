@@ -3,7 +3,7 @@
     <parent>
         <groupId>com.github.davidmoten</groupId>
         <artifactId>sonatype-parent</artifactId>
-        <version>0.2.3</version>
+        <version>0.2.4</version>
     </parent>
     <artifactId>subethasmtp</artifactId>
     <version>7.1.8-SNAPSHOT</version>
