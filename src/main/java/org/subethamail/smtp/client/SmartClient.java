@@ -3,6 +3,7 @@ package org.subethamail.smtp.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +18,9 @@ import org.subethamail.smtp.client.SMTPClient.Response;
 
 import com.github.davidmoten.guavamini.Preconditions;
 import com.github.davidmoten.guavamini.annotations.VisibleForTesting;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 
 /**
  * A somewhat smarter abstraction of an SMTP client which doesn't require
@@ -69,9 +73,13 @@ public class SmartClient {
      *            the Authenticator object which will be called after the EHLO
      *            command to authenticate this client to the server. If is null
      *            then no authentication will happen.
+     * @param sslSocketFactory
+     *            the SSLSocketFactory used to create a new SSLSocket when
+     *            startTLS() is called on the client.  If empty, the default
+     *            SSLSocketFactory will be used.
      */
-    private SmartClient(Optional<SocketAddress> bindpoint, String clientHeloHost, Optional<Authenticator> authenticator) {
-        this(new SMTPClient(Preconditions.checkNotNull(bindpoint, "bindpoint cannot be null"), Optional.empty()),
+    private SmartClient(Optional<SocketAddress> bindpoint, String clientHeloHost, Optional<Authenticator> authenticator, Optional<SSLSocketFactory> sslSocketFactory) {
+        this(new SMTPClient(Preconditions.checkNotNull(bindpoint, "bindpoint cannot be null"), Optional.empty(), sslSocketFactory),
                 clientHeloHost, authenticator);
     }
 
@@ -103,7 +111,11 @@ public class SmartClient {
     public final static SmartClient createAndConnect(String host, int port, Optional<SocketAddress> bindpoint,
             String clientHeloHost, Optional<Authenticator> authenticator)
                     throws UnknownHostException, SMTPException, IOException {
-        SmartClient client = new SmartClient(bindpoint, clientHeloHost, authenticator);
+        return createAndConnect(host, port, bindpoint, clientHeloHost, authenticator, Optional.empty());
+    }
+
+    public final static SmartClient createAndConnect(String host, int port, Optional<SocketAddress> bindpoint, String clientHeloHost, Optional<Authenticator> authenticator, Optional<SSLSocketFactory> sslSocketFactory) throws UnknownHostException, SMTPException, IOException {
+        SmartClient client = new SmartClient(bindpoint, clientHeloHost, authenticator, sslSocketFactory);
         client.connect(host, port);
         return client;
     }
@@ -137,16 +149,32 @@ public class SmartClient {
      */
     protected void sendHeloOrEhlo() throws IOException, SMTPException {
         extensions.clear();
-        Response resp = client.sendReceive("EHLO " + heloHost);
-        if (resp.isSuccess()) {
-            parseEhloResponse(resp);
-        } else if (resp.getCode() == 500 || resp.getCode() == 502) {
-            // server does not support EHLO, try HELO
-            client.sendAndCheck("HELO " + heloHost);
-        } else {
-            // some serious error
-            throw new SMTPException(resp);
+        Response resp = sendEhlo();
+        if (!resp.isSuccess()) {
+            if (resp.getCode() == 500 || resp.getCode() == 502) {
+                // server does not support EHLO, try HELO
+                client.sendAndCheck("HELO " + heloHost);
+            } else {
+                // some serious error
+                throw new SMTPException(resp);
+            }
         }
+    }
+
+    /**
+     * Sends the EHLO command, saving the list of SMTP extensions supported by
+     * the server on success.
+     *
+     * @return The EHLO response.
+     * @throws IOException
+     */
+    protected Response sendEhlo() throws IOException {
+        Response resp = client.sendReceive("EHLO " + heloHost);
+        if(resp.isSuccess()) {
+            parseEhloResponse(resp);
+        }
+
+        return resp;
     }
 
     /**
@@ -176,6 +204,28 @@ public class SmartClient {
             serverClosingTransmissionChannel = true;
         return response;
     }
+
+    /**
+     * Upgrades the connection to use TLS with the STARTTLS command and reissues the EHLO to the server.
+     *
+     * @throws IllegalStateException Thrown if a server did not indicate it supports STARTTLS in the original EHLO/HELO.
+     * @throws IOException
+     * @throws SMTPException
+     */
+    public void startTLS() throws IOException, SMTPException {
+        if(!extensions.containsKey("STARTTLS")){
+            throw new IllegalStateException("called STARTTLS on a server that did not advertise STARTTLS support in the EHLO/HELO response");
+        }
+        client.sendAndCheck("STARTTLS");
+
+        this.client.performSSLHandshake();
+        extensions.clear();
+        Response resp = sendEhlo();
+        if (!resp.isSuccess()) {
+            throw new SMTPException(resp);
+        }
+    }
+
 
     public void from(String from) throws IOException, SMTPException {
         client.sendAndCheck("MAIL FROM: <" + from + ">");
