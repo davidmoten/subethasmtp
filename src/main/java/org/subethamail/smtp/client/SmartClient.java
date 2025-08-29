@@ -3,7 +3,6 @@ package org.subethamail.smtp.client;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +18,6 @@ import org.subethamail.smtp.client.SMTPClient.Response;
 import com.github.davidmoten.guavamini.Preconditions;
 import com.github.davidmoten.guavamini.annotations.VisibleForTesting;
 
-import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
@@ -170,7 +168,7 @@ public class SmartClient {
      */
     protected Response sendEhlo() throws IOException {
         Response resp = client.sendReceive("EHLO " + heloHost);
-        if(resp.isSuccess()) {
+        if (resp.isSuccess()) {
             parseEhloResponse(resp);
         }
 
@@ -218,7 +216,7 @@ public class SmartClient {
         }
         client.sendAndCheck("STARTTLS");
 
-        this.client.performSSLHandshake();
+        client.performSSLHandshake();
         extensions.clear();
         Response resp = sendEhlo();
         if (!resp.isSuccess()) {

@@ -186,21 +186,18 @@ public class SMTPClient implements AutoCloseable {
         this.socket.bind(this.bindpoint.orElse(null));
         this.socket.setSoTimeout(REPLY_TIMEOUT);
         this.socket.connect(new InetSocketAddress(host, port), CONNECT_TIMEOUT);
-        updateSocket(this.socket);
+        updateSocket();
         connected = true;
     }
 
     /**
-     * Replaces the existing socket with a new Socket, updating the readers, writers and streams derived
+     * Called when replacing the existing socket with a new Socket, updating the readers, writers and streams derived
      * from the socket.  Used on the initial connect() to set up IO, and on upgrading a connection to TLS,
      * where the new Socket is an SSLSocket.
      *
-     * @param socket
      * @throws IOException
      */
-    protected void updateSocket(Socket socket) throws IOException {
-        this.socket = socket;
-
+    protected void updateSocket() throws IOException {
         try {
             this.localSocketAddress = this.socket.getLocalSocketAddress();
 
@@ -372,7 +369,7 @@ public class SMTPClient implements AutoCloseable {
      */
     protected void performSSLHandshake() throws IOException {
         InetSocketAddress remoteAddress = (InetSocketAddress) socket.getRemoteSocketAddress();
-        if(remoteAddress == null){
+        if (remoteAddress == null){
             throw new IllegalStateException("socket should be connected at this point");
         }
 
@@ -380,6 +377,7 @@ public class SMTPClient implements AutoCloseable {
         sslSocket.setUseClientMode(true);
         sslSocket.startHandshake();
 
-        updateSocket(sslSocket);
+        this.socket = sslSocket;
+        updateSocket();
     }
 }
