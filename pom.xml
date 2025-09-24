@@ -16,7 +16,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <mail-api.version>2.1.4</mail-api.version>
+        <mail-api.version>2.1.5</mail-api.version>
         <angus-mail.version>2.0.5</angus-mail.version>
 
         <slf4j.version>1.7.36</slf4j.version>
