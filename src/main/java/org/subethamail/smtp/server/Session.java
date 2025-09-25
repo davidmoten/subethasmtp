@@ -1,6 +1,7 @@
 package org.subethamail.smtp.server;
 
 import java.io.BufferedInputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -324,7 +325,7 @@ public final class Session implements Runnable, MessageContext {
      */
     public void setSocket(Socket socket) throws IOException {
         this.socket = socket;
-        this.input = new BufferedInputStream(this.socket.getInputStream(), BUFFER_SIZE);
+        this.input = new NonClosableInputStream(new BufferedInputStream(this.socket.getInputStream(), BUFFER_SIZE));
         this.reader = new CRLFTerminatedReader(this.input);
         this.output = this.socket.getOutputStream();
         this.writer = new PrintWriter(this.output);
@@ -561,5 +562,41 @@ public final class Session implements Runnable, MessageContext {
     @Override
     public Certificate[] getTlsPeerCertificates() {
         return tlsPeerCertificates;
+    }
+
+    /**
+     * An InputStream class that on {@link #close()} call will not close underlying stream.
+     * To actually close underlying stream, call the method {@link #closeDecorated()}
+     */
+    private static final class NonClosableInputStream extends FilterInputStream {
+
+        private final InputStream decorated;
+
+        /**
+         * Creates a <code>FilterInputStream</code>
+         * by assigning the  argument <code>decorated</code>
+         * to the field <code>this.decorated</code> so as
+         * to remember it for later use.
+         *
+         * @param decorated the underlying input stream, or <code>null</code> if
+         *           this instance is to be created without an underlying stream.
+         */
+        protected NonClosableInputStream(InputStream decorated) {
+            super(decorated);
+            this.decorated = decorated;
+        }
+
+        @Override
+        public void close() {
+
+        }
+
+        /**
+         * Close stream, actually.
+         * @throws IOException
+         */
+        public void closeDecorated() throws IOException {
+            this.decorated.close();
+        }
     }
 }
