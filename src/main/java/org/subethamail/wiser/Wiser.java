@@ -56,7 +56,7 @@ public final class Wiser implements SimpleMessageListener {
     }
 
     public static Wiser create() {
-        return new Wiser(SMTPServer.port(25).build(), ACCEPTER_DEFAULT);
+        return new Wiser(SMTPServer.port(25), ACCEPTER_DEFAULT);
     }
 
     public static WiserBuilder accepter(Accepter accepter) {
@@ -95,11 +95,6 @@ public final class Wiser implements SimpleMessageListener {
 
     public static interface Accepter {
         boolean accept(String from, String recipient);
-    }
-
-    private Wiser(SMTPServer server, Accepter accepter) {
-        this.server = server;
-        this.accepter = accepter;
     }
 
     private Wiser(Builder builder, Accepter accepter) {
