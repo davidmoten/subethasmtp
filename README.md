@@ -1,6 +1,6 @@
 # subethasmtp
 <a href="https://github.com/davidmoten/subethasmtp/actions/workflows/ci.yml"><img src="https://github.com/davidmoten/subethasmtp/actions/workflows/ci.yml/badge.svg"/></a><br/>
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.davidmoten/subethasmtp/badge.svg?style=flat)](https://maven-badges.herokuapp.com/maven-central/com.github.davidmoten/subethasmtp)<br/>
+[![Maven Central](https://maven-badges.sml.io/sonatype-central/com.github.davidmoten/subethasmtp/badge.svg?style=flat)](https://maven-badges.sml.io/sonatype-central/com.github.davidmoten/subethasmtp)<br/>
 [![codecov](https://codecov.io/gh/davidmoten/subethasmtp/branch/master/graph/badge.svg)](https://codecov.io/gh/davidmoten/subethasmtp)<br/>
 
 SubEtha SMTP is a Java library which allows your application to receive SMTP mail with a simple, easy-to-understand API.
