@@ -19,7 +19,7 @@
         <mail-api.version>2.1.5</mail-api.version>
         <angus-mail.version>2.0.5</angus-mail.version>
 
-        <slf4j.version>1.7.36</slf4j.version>
+        <slf4j.version>2.0.0</slf4j.version>
     </properties>
 
     <inceptionYear>2006</inceptionYear>
